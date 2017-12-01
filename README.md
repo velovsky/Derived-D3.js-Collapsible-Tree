@@ -43,12 +43,12 @@ Assign an input object with the following properties:
 ```
 var input = 
 {
-targetDiv:     "#d3_tree_container",  //div where SVG will be appended to (REQUIRED)
-jsonObject:    obj,										//tree JSON (REQUIRED)
-clickCallBack: get_child_data,				//if desired assign a call back for the nodes
-levelWidth:    200,										//the level width between parent and children nodes (px)
-toggleMode:    1,											//0: normal behaviour, 1: force collapse & unload if node of same level opened
-zoom:          true                   //assign pan & zoom within the SVG
+	targetDiv:     "#d3_tree_container",  //div where SVG will be appended to (REQUIRED)
+	jsonObject:    obj,										//tree JSON (REQUIRED)
+	clickCallBack: get_child_data,				//if desired assign a call back for the nodes
+	levelWidth:    200,										//the level width between parent and children nodes (px)
+	toggleMode:    1,											//0: normal behaviour, 1: force collapse & unload if node of same level opened
+	zoom:          true                   //assign pan & zoom within the SVG
 };
 ```
 And *generate* tree:
