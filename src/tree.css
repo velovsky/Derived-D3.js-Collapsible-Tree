@@ -1,0 +1,87 @@
+.grabbaable
+{
+	cursor: -moz-grab;
+	cursor: -webkit-grab;
+	cursor: grab;
+}
+
+.grabbaable:active
+{ 
+    cursor: grabbing;
+    cursor: -moz-grabbing;
+    cursor: -webkit-grabbing;
+}
+
+.node
+{
+	cursor: pointer;
+}
+
+.node circle 
+{
+  	fill: #999;
+	stroke: #636c72;
+	stroke-width: 1.5px;
+}
+
+.node text 
+{
+	fill: hsl(0, 11%, 90%);
+	font: 10px sans-serif;
+}
+
+.node text.selected
+{
+	fill:#ffffff
+}
+
+.node circle.closed
+{
+	fill: #333;
+}
+
+.node rect
+{
+	fill: rgb(210, 118, 4)
+}
+
+.node rect.selected
+{
+	opacity: 0.5;
+}
+
+.link 
+{
+	fill: none;
+	stroke: rgb(210, 118, 4);
+	stroke-width: 1.5px;
+}
+
+.node circle.spinner 
+{
+  	stroke: rgb(210, 118, 4);
+	stroke-width: 2.5px;
+	stroke-dasharray: 1, 200;
+	stroke-dashoffset: 0;
+	animation: dash 2s ease-in-out infinite, color 6s ease-in-out infinite;
+	stroke-linecap: round;
+}
+
+@keyframes dash 
+{
+  0% 
+  {
+    stroke-dasharray: 1, 200;
+    stroke-dashoffset: 0;
+  }
+  50% 
+  {
+    stroke-dasharray: 89, 200;
+    stroke-dashoffset: -35px;
+  }
+  100% 
+  {
+    stroke-dasharray: 89, 200;
+    stroke-dashoffset: -124px;
+  }
+}
