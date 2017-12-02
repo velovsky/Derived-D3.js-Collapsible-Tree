@@ -26,13 +26,13 @@
 
 .node text 
 {
-	fill: hsl(0, 11%, 90%);
+	fill: #333;
 	font: 10px sans-serif;
 }
 
 .node text.selected
 {
-	fill:#ffffff
+	fill:#000000
 }
 
 .node circle.closed
@@ -42,7 +42,7 @@
 
 .node rect
 {
-	fill: rgb(210, 118, 4)
+	fill: rgb(210, 4, 4)
 }
 
 .node rect.selected
@@ -53,14 +53,14 @@
 .link 
 {
 	fill: none;
-	stroke: rgb(210, 118, 4);
+	stroke: #999;
 	stroke-width: 1.5px;
 }
 
 .node circle.spinner 
 {
-  	stroke: rgb(210, 118, 4);
-	stroke-width: 2.5px;
+  stroke: rgb(211, 0, 0);
+	stroke-width: 1.5px;
 	stroke-dasharray: 1, 200;
 	stroke-dashoffset: 0;
 	animation: dash 2s ease-in-out infinite, color 6s ease-in-out infinite;
