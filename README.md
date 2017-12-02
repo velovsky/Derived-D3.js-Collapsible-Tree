@@ -10,13 +10,15 @@ Just a simple derived D3.js Collapsible Tree library. This script enables develo
 * Two kinds of Node toggling;
 
 **Motivation**: This was used in a personal project as a module for a web App. I felt that the original D3 tree could be more JS-friendly and customizable. Feel free to use / study / change / contribute and criticize :).
+
 *Tested in Chrome and IE(v11) browsers.*
 
 **Disclaimer:** This is a D3-based library. I do not own or have any affiliation with D3.js, nor do I intend to promote any material for any personal cause / benefit.
 
 ### Example
 
-A live preview shall be provided.
+[Here](https://rawgit.com/velovsky/Derived-D3.js-Collapsible-Tree/master/src/test.html) you have a live preview of a D3 tree performing lazy loadings on click.
+It is also possible to define different configurations.
 
 ## Installing
 
@@ -93,6 +95,83 @@ The ```jsonObject``` property has to have the following structure:
 ```
 
 Of course, additional properties can be assigned if needed.
+
+### Lazy Loading example
+
+Bellow is an example of a lazy loading callback. The way the API is built, requires to be return a (**jQuery**) promise in order to correctly toggle the nodes. This behavior might be improved in order to avoid **jQuery** dependencies in the future.
+```
+function get_child_data(d)
+	{		
+		if(d.loaded !== undefined)
+			return;
+
+		var newItem = [];
+
+		var promise = $.ajax({
+			url: "https://jsonplaceholder.typicode.com/posts?userId=" + d.key, //get childs of parent with certain key (or any other property)
+			dataType: 'json',
+			type: 'GET',
+			cache: false,
+			success: function(responseJson)
+			{
+				if(responseJson.length === 0)
+					return;
+
+				var temp = responseJson;
+
+				temp.forEach(function(element)
+						{
+							var buffer = {};
+							buffer["name"] = element["title"];
+							buffer["key"] = element["id"];
+							buffer["body"] = element["body"];
+							buffer["_children"] = [];          //add this if there are more childs to spawn
+
+							newItem.push(buffer);
+						});
+
+				if(d.children)
+					d.children = newItem;
+				else
+					d._children = newItem;
+
+				d.loaded = true; //let D3 know if node childs have been loaded
+			}
+		});
+
+		return promise; //return a promise if async. requests
+					
+	}
+```
+Firstly define a ```loaded``` property (could be another)  in order to avoid unnecessary requests and tree reloading's, if children already loaded.
+```
+if(d.loaded !== undefined)
+			return;
+```
+Make a request for the info that you want to display. In this case I am using ```key``` property of the initial loaded json as a criteria to get the childs.
+```
+var promise = $.ajax({
+            url: "https://jsonplaceholder.typicode.com/posts?userId=" + d.key, //get childs of parent with certain key (or any other property)
+```
+Once the request has been completed, append the new child's object to the parent's object.  A ```children``` property means that child nodes are visible, while a ```_children``` denotes a collapsed node.
+```
+if(d.children)
+	d.children = newItem;
+else
+	d._children = newItem;
+```
+Lastly define ```loaded``` as true to avoid further requests, and return the **promise** of the request.
+```
+	d.loaded = true; //let D3 know if node childs have been loaded
+	}
+});
+
+return promise; //return a promise if async. requests		
+```
+This is a custom way of performing lazy loading. You can assign a different design pattern as long as you follow the same principles as the one in the example. 
+If you still have doubts just check the code on the preview example.
+
+**OBS:** When defining the initial json don't forget to define the root node ```loaded``` to true.
 
 ## Dependencies
 

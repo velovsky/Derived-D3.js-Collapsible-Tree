@@ -58,7 +58,7 @@ preview(250,0,750,false);
 function alertActiveNode()
 {
 	var out = d3_tree.getActiveNode();
-	out ? console.log("select a node (click text)") : console.log(out);
+	out === undefined ? console.log("select a node (click text)") : console.log(out);
 	alert("check console");
 }
 
@@ -93,7 +93,7 @@ function preview(levelWidth,toggleMode,duration,zoom)
 						cache: false,
 						success: function(responseJson)
 						{
-							if(responseJson.totalFeatures === 0)
+							if(responseJson.length === 0)
 								return;
 
 							var temp = responseJson;
@@ -128,7 +128,7 @@ function preview(levelWidth,toggleMode,duration,zoom)
 			cache: false,
 			success: function(responseJson)
 			{
-				if(responseJson.totalFeatures === 0)
+				if(responseJson.length === 0)
 					return;
 
 				var temp = responseJson;
