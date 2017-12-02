@@ -98,7 +98,7 @@ Of course, additional properties can be assigned if needed.
 
 ### Lazy Loading example
 
-Bellow is an example of a lazy loading callback. The way the API is built, requires to be return a (**jQuery**) promise in order to correctly toggle the nodes. This behavior might be improved in order to avoid **jQuery** dependencies in the future.
+Bellow is an example of a lazy loading callback. The way the API is built, requires to be returned a (**jQuery**) promise in order to correctly toggle the nodes. This behavior might be improved in order to avoid **jQuery** dependencies in the future.
 ```
 function get_child_data(d)
 	{		
