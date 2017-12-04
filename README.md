@@ -143,7 +143,7 @@ function get_child_data(d)
 					
 	}
 ```
-Firstly define a ```loaded``` property (could be another)  in order to avoid unnecessary requests and tree reloading's, if children already loaded.
+Firstly define a ```loaded``` property (could be another)  in order to avoid unnecessary requests and tree reloading's, if children are already loaded.
 ```
 if(d.loaded !== undefined)
 			return;
