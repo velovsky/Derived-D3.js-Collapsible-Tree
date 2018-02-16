@@ -62,6 +62,7 @@ function d3_tree_object()
 		.attr("width", "100%")
 		.attr("height", "100%")
 		.append("g")
+		.append("g")
 		.attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 		
 		this.svg = d3.select(targetObj + " svg").node();
