@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Collapsible Tree</title>
+    <link rel="stylesheet" href="./style.css" />
+  </head>
+  <body>
+    <main>
+      <h1>Collapsible Tree</h1>
+      <p class="lead">
+        A D3 v7 tree with lazy loading. Click a dot to open or close a node, click a label to select
+        it. Keyboard: Tab to a node, Enter opens it, Space selects it.
+      </p>
+
+      <form id="options" class="options">
+        <label>
+          Data
+          <select name="source">
+            <option value="lazy">Lazy: users → posts (JSONPlaceholder)</option>
+            <option value="static">Static: flare.json</option>
+          </select>
+        </label>
+        <label
+          >Level width <input name="levelWidth" type="number" value="220" min="60" step="20"
+        /></label>
+        <label
+          >Duration (ms) <input name="duration" type="number" value="750" min="0" step="50"
+        /></label>
+        <label><input name="zoom" type="checkbox" /> Zoom and pan</label>
+        <label><input name="accordion" type="checkbox" /> Accordion</label>
+        <button type="submit">New tree</button>
+      </form>
+
+      <div id="tree"></div>
+
+      <section class="selected">
+        <h2>Selected node</h2>
+        <pre id="selected">Click a label.</pre>
+      </section>
+    </main>
+    <script type="module" src="./main.ts"></script>
+  </body>
+</html>
