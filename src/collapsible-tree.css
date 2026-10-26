@@ -1,0 +1,93 @@
+/* Default look of the collapsible tree. Override the custom properties to theme it. */
+.collapsible-tree {
+  --tree-link: #a8a29e;
+  --tree-node: #a8a29e;
+  --tree-node-closed: #44403c;
+  --tree-text: #292524;
+  --tree-halo: #ffffff;
+  --tree-accent: #d20404;
+
+  display: block;
+  width: 100%;
+  font:
+    11px system-ui,
+    sans-serif;
+  user-select: none;
+}
+
+.collapsible-tree.zoomable {
+  cursor: grab;
+}
+
+.collapsible-tree.zoomable:active {
+  cursor: grabbing;
+}
+
+.collapsible-tree .link {
+  fill: none;
+  stroke: var(--tree-link);
+  stroke-width: 1.5px;
+}
+
+.collapsible-tree .node {
+  cursor: pointer;
+  outline: none;
+}
+
+.collapsible-tree .node circle {
+  fill: var(--tree-node);
+  stroke: var(--tree-node);
+  stroke-width: 1.5px;
+}
+
+.collapsible-tree .node.closed circle {
+  fill: var(--tree-node-closed);
+}
+
+.collapsible-tree .node text {
+  fill: var(--tree-text);
+  stroke: var(--tree-halo);
+  stroke-width: 3px;
+  stroke-linejoin: round;
+  paint-order: stroke;
+}
+
+.collapsible-tree .node.selected text {
+  fill: var(--tree-accent);
+  font-weight: 600;
+}
+
+.collapsible-tree .node:focus-visible circle {
+  stroke: var(--tree-accent);
+  stroke-width: 3px;
+}
+
+.collapsible-tree .node.loading circle {
+  fill: none;
+  stroke: var(--tree-accent);
+  stroke-dasharray: 1 200;
+  stroke-linecap: round;
+  animation: collapsible-tree-dash 1.5s ease-in-out infinite;
+}
+
+@keyframes collapsible-tree-dash {
+  0% {
+    stroke-dasharray: 1 200;
+    stroke-dashoffset: 0;
+  }
+  50% {
+    stroke-dasharray: 20 200;
+    stroke-dashoffset: -8px;
+  }
+  100% {
+    stroke-dasharray: 20 200;
+    stroke-dashoffset: -28px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .collapsible-tree .node.loading circle {
+    animation: none;
+    stroke-dasharray: none;
+  }
+}

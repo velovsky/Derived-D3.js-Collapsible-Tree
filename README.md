@@ -1,181 +1,124 @@
-# D3.js-Collapsible-Tree
-Just a simple derived D3.js Collapsible Tree library. This script enables developers to instantiate one or more tree's capable of performing the following operations:
+# Collapsible Tree
 
-* Generate / Destroy Tree;
-* Style some **SVG** elements through **CSS**;
-* Enable Zoom;
-* Node Selection;
-* Node click Callbacks;
-* Lazy Loading (**Ajax** request);
-* Two kinds of Node toggling;
+A collapsible [D3](https://d3js.org) tree that loads children on demand. It started as a
+derived version of the classic D3 collapsible tree, made easier to use from application code.
 
-**Motivation**: This was used in a personal project as a module for a web App. I felt that the original D3 tree could be more JS-friendly and customizable. Feel free to use / study / change / contribute and criticize :).
+- Lazy loading: return the children of a node from a promise
+- Selection with a callback, keyboard support and ARIA tree roles
+- Optional zoom and pan, and an accordion mode
+- TypeScript, D3 v7 modules (no jQuery), themable with CSS custom properties
 
-*Tested in Chrome and IE(v11) browsers.*
+**[Live demo](https://velovsky.github.io/Derived-D3.js-Collapsible-Tree/)**
 
-**Disclaimer:** This is a D3-based library. I do not own or have any affiliation with D3.js, nor do I intend to promote any material for any personal cause / benefit.
+## Install
 
-### Example
-
-[Here](https://rawgit.com/velovsky/Derived-D3.js-Collapsible-Tree/master/src/test.html) you have a live preview of a D3 tree performing lazy loadings on click.
-It is also possible to define different configurations.
-
-## Installing
-
-Simply download the src files and add the "tree.js" to your html file:
-
-```
-<script src="...src/js/tree.js" charset="utf-8"></script> 
+```bash
+npm install github:velovsky/Derived-D3.js-Collapsible-Tree
 ```
 
-And the "tree.css" file:
+The package builds itself on install (`prepare`). It needs a bundler such as Vite, because it
+imports the D3 modules it uses (`d3-hierarchy`, `d3-selection`, `d3-shape`, `d3-transition`,
+`d3-zoom`).
+
+## Usage
+
+```ts
+import { CollapsibleTree } from "derived-d3-collapsible-tree";
+import "derived-d3-collapsible-tree/style.css";
+
+const tree = new CollapsibleTree("#tree", {
+  data: {
+    name: "Users",
+    children: [
+      { name: "Ann", id: 1, children: [] }, // [] = children not loaded yet
+      { name: "Bob", id: 2, children: [] },
+    ],
+  },
+  loadChildren: async (user) => {
+    const response = await fetch(`/api/users/${user.id}/posts`);
+    const posts = await response.json();
+    return posts.map((post) => ({ name: post.title, id: post.id }));
+  },
+  onSelect: (datum) => console.log("selected", datum),
+  zoom: true,
+});
+
+tree.getSelected(); // the selected datum, or undefined
+tree.destroy(); // removes the SVG
 ```
-<link rel="stylesheet" href="...src/css/tree.css">
-```
 
-### Quick guide through
+### Data
 
-Declare a variable of a ```d3_tree_object``` type:
+Each node has a `name` and optional `children`. Other fields are kept and passed back to your
+callbacks.
 
-```
-var d3_tree = new d3_tree_object();
-```
+| `children`            | Meaning                                                      |
+| --------------------- | ------------------------------------------------------------ |
+| missing               | A leaf.                                                      |
+| a non-empty array     | Children that are already known.                             |
+| an empty array (`[]`) | Children that are not loaded yet. `loadChildren` loads them. |
 
-Assign an input object with the following properties (example):
+`loadChildren` runs once per node. If it returns an empty array, the node becomes a leaf. If it
+throws, the tree calls `onError` (default: `console.error`) and the node stays closed.
 
-```
-var input = 
-{
-	targetDiv:     "#d3_tree_container",
-	jsonObject:    obj,									
-	clickCallBack: get_child_data,				
-	levelWidth:    200,										
-	toggleMode:    1,											
-	zoom:          true                   
-};
-```
-And *generate* the tree:
+### Options
 
-```
-d3_tree.generate(input);
-```
+| Option         | Default         | Description                                                                                               |
+| -------------- | --------------- | --------------------------------------------------------------------------------------------------------- |
+| `data`         | required        | The root node.                                                                                            |
+| `loadChildren` | –               | `(datum) => children \| Promise<children>` for lazy nodes.                                                |
+| `onSelect`     | –               | Called with the datum when the user selects a label.                                                      |
+| `onError`      | `console.error` | Called when `loadChildren` fails.                                                                         |
+| `label`        | `d => d.name`   | The text of a node.                                                                                       |
+| `levelWidth`   | `180`           | Horizontal distance between levels, in px.                                                                |
+| `rowHeight`    | `22`            | Vertical distance between rows, in px.                                                                    |
+| `duration`     | `750`           | Transition duration, in ms.                                                                               |
+| `zoom`         | `false`         | Lets the user pan and zoom.                                                                               |
+| `accordion`    | `false`         | Opening a node closes the other open nodes on its level. Lazy nodes closed this way load again next time. |
 
-The ```targetDiv``` and ```jsonObject``` properties are required to be assigned for the ```input``` object. If not, a console error will be generated. ```targetDiv``` is the *div* where the **SVG** shall be appended to, and ```jsonObject``` is the *data* that feeds the tree (or initial hard-coded Data). The following properties (clickCallBack, levelWidth, ...) are not required to be inputted, nevertheless they are helpful if a more "custom-tailored" tree is desired.
+### Interaction
 
-**clickCallBack:** Callback used for node ```onclick``` events. For example, it might be useful for Lazy Loading requests or any additional tasks.
+| Action               | Mouse           | Keyboard         |
+| -------------------- | --------------- | ---------------- |
+| Open or close a node | Click the dot   | Tab to it, Enter |
+| Select a node        | Click the label | Tab to it, Space |
 
-**levelWidth:** Define the width in *px* between parent and children nodes. Default is 180(px).
+### Theming
 
-**toggleMode:** Defines the behaviour when toggling the nodes in the tree. Two integers are accepted: 
+Override the custom properties on `.collapsible-tree`:
 
-* ```0```: default behaviour; 
-* ```1```: when a node is clicked all its siblings are forced to collapse and unload data (only works for Lazy Loading design patterns). 
-
-Default is ```0```.
-
-**zoom:** Boolean value. If ```true``` the tree's SVG can be panned and zoomed. Default is ```false```.
-
-**duration:** The transition duration in ms. Default is 750(ms).
-
-
-The ```jsonObject``` property has to have the following structure:
-```
-{
- "name": "flare",   //ui title
- "children":        //array of objects (if it has any children)
-	[{    
-	 "name": "analytics",
-	 "children": [] 
-		},
-	{
-	 "name": "analytics",
-	 "children": []
-	 }]
+```css
+.collapsible-tree {
+  --tree-accent: #2563eb;
+  --tree-link: #cbd5e1;
 }
 ```
 
-Of course, additional properties can be assigned if needed.
+Available: `--tree-link`, `--tree-node`, `--tree-node-closed`, `--tree-text`, `--tree-halo`,
+`--tree-accent`.
 
-### Lazy Loading example
+## Development
 
-Bellow is an example of a lazy loading callback. The way the API is built, requires to be returned a (**jQuery**) promise in order to correctly toggle the nodes. This behavior might be improved in order to avoid **jQuery** dependencies in the future.
+```bash
+npm install
+npm run dev        # demo with hot reload
+npm test           # Vitest + jsdom
+npm run lint && npm run typecheck
+npm run build      # dist/ (ES module, types, CSS)
 ```
-function get_child_data(d)
-	{		
-		if(d.loaded !== undefined)
-			return;
 
-		var newItem = [];
+## Changes in 2.0
 
-		var promise = $.ajax({
-			url: "https://jsonplaceholder.typicode.com/posts?userId=" + d.key, //get childs of parent with certain key (or any other property)
-			dataType: 'json',
-			type: 'GET',
-			cache: false,
-			success: function(responseJson)
-			{
-				if(responseJson.length === 0)
-					return;
+Version 1 (2018) used D3 v3 and jQuery. Version 2 is a rewrite:
 
-				var temp = responseJson;
+- D3 v7 modules, no jQuery, no IE polyfills. TypeScript with type declarations.
+- `new d3_tree_object().generate(input)` is now `new CollapsibleTree(target, options)`.
+- `clickCallBack` that mutated `d.children` / `d._children` and returned a jQuery promise is now
+  `loadChildren`, which returns the children (or a native promise of them).
+- `toggleMode: 1` is now `accordion: true`. `getActiveNode()` is now `getSelected()`.
+- The tree grows with its content instead of a fixed container height.
+- New: `onSelect`, `onError`, `label`, `rowHeight`, keyboard support, ARIA roles, CSS theming.
 
-				temp.forEach(function(element)
-						{
-							var buffer = {};
-							buffer["name"] = element["title"];
-							buffer["key"] = element["id"];
-							buffer["body"] = element["body"];
-							buffer["_children"] = [];          //add this if there are more childs to spawn
+## License
 
-							newItem.push(buffer);
-						});
-
-				if(d.children)
-					d.children = newItem;
-				else
-					d._children = newItem;
-
-				d.loaded = true; //let D3 know if node childs have been loaded
-			}
-		});
-
-		return promise; //return a promise if async. requests
-					
-	}
-```
-Firstly define a ```loaded``` property (could be another)  in order to avoid unnecessary requests and tree reloading's, if children are already loaded.
-```
-if(d.loaded !== undefined)
-			return;
-```
-Make a request for the info that you want to display. In this case I am using ```key``` property of the initial loaded json as a criteria to get the childs.
-```
-var promise = $.ajax({
-            url: "https://jsonplaceholder.typicode.com/posts?userId=" + d.key, //get childs of parent with certain key (or any other property)
-```
-Once the request has been completed, append the new child's object to the parent's object.  A ```children``` property means that child nodes are visible, while a ```_children``` denotes a collapsed node.
-```
-if(d.children)
-	d.children = newItem;
-else
-	d._children = newItem;
-```
-Lastly define ```loaded``` as true to avoid further requests, and return the **promise** of the request.
-```
-	d.loaded = true; //let D3 know if node childs have been loaded
-	}
-});
-
-return promise; //return a promise if async. requests		
-```
-This is a custom way of performing lazy loading. You can assign a different design pattern as long as you follow the same principles as the one in the example. 
-If you still have doubts just check the code on the preview example.
-
-**OBS:** When defining the initial json don't forget to define the root node ```loaded``` to true.
-
-## Dependencies
-
-* [D3.js](https://github.com/d3/d3/releases/tag/v3.5.17) - ```v3.5.x```
-* [jQuery](https://jquery.com/download/) - ```v3.2.x``` (only used for Ajax requests & promises)
-
-*OBS:* These modules can be found inside the lib folder in the repository.
+GPL-3.0. This library builds on [D3](https://d3js.org) and is not affiliated with it.
